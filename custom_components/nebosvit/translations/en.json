@@ -1,0 +1,227 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Nebosvit server",
+        "description": "Connect to the Nebosvit alarm API.",
+        "data": {
+          "base_url": "Server URL",
+          "app_key": "App key (if the server requires one)"
+        }
+      },
+      "oblast": {
+        "title": "Oblast",
+        "data": {
+          "oblast": "Oblast"
+        }
+      },
+      "place": {
+        "title": "Place to watch",
+        "description": "Pick the whole oblast, a raion or a hromada.",
+        "data": {
+          "region_id": "Place"
+        }
+      },
+      "power_area": {
+        "title": "Outage schedule",
+        "description": "Optional: track the hourly outage schedule of your zone. «—» skips it.",
+        "data": {
+          "power_area": "Outage zone"
+        }
+      },
+      "power_queue": {
+        "title": "Outage queue",
+        "data": {
+          "power_queue": "Queue"
+        }
+      },
+      "outage_area": {
+        "title": "Outages at your address",
+        "description": "Optional: planned and emergency outages (repairs, faults) at your address. The address stays in Home Assistant; the server only sees the settlement. «—» skips it.",
+        "data": {
+          "outage_area": "Operator zone"
+        }
+      },
+      "outage_search": {
+        "title": "Settlement",
+        "description": "Type the settlement name or part of it.",
+        "data": {
+          "query": "Name"
+        }
+      },
+      "outage_settlement": {
+        "title": "Settlement",
+        "data": {
+          "settlement_id": "Pick from the list"
+        }
+      },
+      "outage_address": {
+        "title": "Street and house",
+        "description": "Both may stay empty: then every outage in the settlement counts. Streets in the operator's data: {streets}",
+        "data": {
+          "street": "Street",
+          "house": "House"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot reach the server.",
+      "invalid_auth": "The server rejected the app key.",
+      "no_settlements": "The server has no outages by address for this zone yet.",
+      "no_match": "No settlement with that name."
+    },
+    "abort": {
+      "already_configured": "This place is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "oblast": {
+        "title": "Oblast",
+        "data": {
+          "oblast": "Oblast"
+        }
+      },
+      "place": {
+        "title": "Place to watch",
+        "description": "Pick the whole oblast, a raion or a hromada.",
+        "data": {
+          "region_id": "Place"
+        }
+      },
+      "power_area": {
+        "title": "Outage schedule",
+        "description": "Optional: track the hourly outage schedule of your zone. «—» skips it.",
+        "data": {
+          "power_area": "Outage zone"
+        }
+      },
+      "power_queue": {
+        "title": "Outage queue",
+        "data": {
+          "power_queue": "Queue"
+        }
+      },
+      "outage_area": {
+        "title": "Outages at your address",
+        "description": "Optional: planned and emergency outages (repairs, faults) at your address. The address stays in Home Assistant; the server only sees the settlement. «—» skips it.",
+        "data": {
+          "outage_area": "Operator zone"
+        }
+      },
+      "outage_search": {
+        "title": "Settlement",
+        "description": "Type the settlement name or part of it.",
+        "data": {
+          "query": "Name"
+        }
+      },
+      "outage_settlement": {
+        "title": "Settlement",
+        "data": {
+          "settlement_id": "Pick from the list"
+        }
+      },
+      "outage_address": {
+        "title": "Street and house",
+        "description": "Both may stay empty: then every outage in the settlement counts. Streets in the operator's data: {streets}",
+        "data": {
+          "street": "Street",
+          "house": "House"
+        }
+      },
+      "init": {
+        "title": "Nebosvit settings"
+      }
+    },
+    "error": {
+      "no_settlements": "The server has no outages by address for this zone yet.",
+      "no_match": "No settlement with that name."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "alert_active": {
+        "name": "Alert active"
+      },
+      "power_off": {
+        "name": "Power off (schedule)"
+      },
+      "outage_now": {
+        "name": "Outage at address now"
+      }
+    },
+    "sensor": {
+      "alert_status": {
+        "name": "Alert level",
+        "state": {
+          "clear": "Clear",
+          "yellow": "Yellow",
+          "red": "Red"
+        }
+      },
+      "alert_type": {
+        "name": "Threat type",
+        "state": {
+          "none": "None",
+          "nuclear": "Radiation hazard",
+          "chemical": "Chemical hazard",
+          "air": "Air raid",
+          "artillery": "Artillery threat",
+          "urban_fights": "Street fighting",
+          "unknown": "Danger"
+        }
+      },
+      "alert_since": {
+        "name": "Alert since"
+      },
+      "last_update": {
+        "name": "Alert data updated"
+      },
+      "power_state": {
+        "name": "Power (schedule)",
+        "state": {
+          "on": "On",
+          "off": "Off",
+          "maybe_off": "Possibly off",
+          "unknown": "Unknown"
+        }
+      },
+      "power_next_change": {
+        "name": "Next power change"
+      },
+      "power_next_off": {
+        "name": "Next power cut"
+      },
+      "power_next_on": {
+        "name": "Power back"
+      },
+      "power_off_today": {
+        "name": "Off today by schedule"
+      },
+      "schedule_today": {
+        "name": "Schedule today",
+        "state": {
+          "applies": "Applies",
+          "not_applied": "Not applied",
+          "waiting": "Expected",
+          "no_data": "No data",
+          "source_error": "Source error"
+        }
+      },
+      "schedule_tomorrow": {
+        "name": "Schedule tomorrow",
+        "state": {
+          "applies": "Applies",
+          "not_applied": "Not applied",
+          "waiting": "Expected",
+          "no_data": "No data",
+          "source_error": "Source error"
+        }
+      },
+      "next_outage": {
+        "name": "Next outage at address"
+      }
+    }
+  }
+}

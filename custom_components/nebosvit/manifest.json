@@ -1,0 +1,14 @@
+{
+  "domain": "nebosvit",
+  "name": "Nebosvit (Ukraine air raid alerts)",
+  "codeowners": [
+    "@symonovserhii"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/symonovserhii/nebosvit-homeassistant",
+  "integration_type": "service",
+  "iot_class": "cloud_push",
+  "issue_tracker": "https://github.com/symonovserhii/nebosvit-homeassistant/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}
