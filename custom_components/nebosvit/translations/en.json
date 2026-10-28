@@ -17,9 +17,10 @@
       },
       "place": {
         "title": "Place to watch",
-        "description": "Pick the whole oblast, a raion or a hromada.",
+        "description": "Choose the whole oblast, a raion or a hromada. «Alerts anywhere in the oblast» counts any alert in the oblast, not only those that concern your place.",
         "data": {
-          "region_id": "Place"
+          "region_id": "Place",
+          "whole_oblast": "Alerts anywhere in the oblast"
         }
       },
       "power_area": {
@@ -84,9 +85,10 @@
       },
       "place": {
         "title": "Place to watch",
-        "description": "Pick the whole oblast, a raion or a hromada.",
+        "description": "Choose the whole oblast, a raion or a hromada. «Alerts anywhere in the oblast» counts any alert in the oblast, not only those that concern your place.",
         "data": {
-          "region_id": "Place"
+          "region_id": "Place",
+          "whole_oblast": "Alerts anywhere in the oblast"
         }
       },
       "power_area": {
@@ -174,6 +176,9 @@
       },
       "alert_since": {
         "name": "Alert since"
+      },
+      "alert_map": {
+        "name": "Alert map"
       },
       "last_update": {
         "name": "Alert data updated"

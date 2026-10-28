@@ -7,6 +7,8 @@ CONF_BASE_URL = "base_url"
 CONF_APP_KEY = "app_key"
 CONF_REGION_ID = "region_id"
 CONF_REGION_NAME = "region_name"
+# Count any alert in the oblast, not only those touching the place.
+CONF_WHOLE_OBLAST = "whole_oblast"
 CONF_POWER_AREA = "power_area"
 CONF_POWER_QUEUE = "power_queue"
 CONF_OUTAGE_AREA = "outage_area"

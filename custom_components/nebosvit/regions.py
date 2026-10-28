@@ -59,15 +59,27 @@ def ancestors(region_id: str) -> set[str]:
     return out
 
 
-def alert_matches(region_id: str, alert: dict) -> bool:
+def oblast_of(region_id: str) -> str:
+    """The oblast a region belongs to (the region itself when it is an oblast)."""
+    for rid in (region_id, *ancestors(region_id)):
+        row = _load().get(rid)
+        if row and row["rank"] == "1":
+            return rid
+    return region_id
+
+
+def alert_matches(region_id: str, alert: dict, whole_oblast: bool = False) -> bool:
     """True if an alert from the feed concerns the watched region.
 
     An alert counts when it covers the region (the region itself or any
-    parent) or lies inside it (the watched region is its parent).
+    parent) or lies inside it (the watched region is its parent). With
+    `whole_oblast` an alert anywhere in the same oblast counts too.
     """
     alert_region = str(alert.get("regionId", ""))
     if alert_region == region_id or alert_region in ancestors(region_id):
         return True
     if str(alert.get("oblastId", "")) == region_id:
         return True
-    return region_id in ancestors(alert_region)
+    if region_id in ancestors(alert_region):
+        return True
+    return whole_oblast and str(alert.get("oblastId", "")) == oblast_of(region_id)

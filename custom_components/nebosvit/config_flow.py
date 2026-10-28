@@ -24,6 +24,7 @@ from .const import (
     CONF_SETTLEMENT_ID,
     CONF_SETTLEMENT_NAME,
     CONF_STREET,
+    CONF_WHOLE_OBLAST,
     DEFAULT_BASE_URL,
     DOMAIN,
     REQUEST_TIMEOUT,
@@ -86,6 +87,7 @@ class _Steps:
         if user_input is not None:
             self._values[CONF_REGION_ID] = user_input[CONF_REGION_ID]
             self._values[CONF_REGION_NAME] = get_name(user_input[CONF_REGION_ID])
+            self._values[CONF_WHOLE_OBLAST] = bool(user_input.get(CONF_WHOLE_OBLAST, False))
             if (abort := await self._check_unique()) is not None:
                 return abort
             await self._load_power_areas()
@@ -97,7 +99,12 @@ class _Steps:
         default = current if current in options else self._oblast_id
         return self.async_show_form(
             step_id="place",
-            data_schema=vol.Schema({vol.Required(CONF_REGION_ID, default=default): vol.In(options)}),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_REGION_ID, default=default): vol.In(options),
+                    vol.Optional(CONF_WHOLE_OBLAST, default=bool(self._values.get(CONF_WHOLE_OBLAST, False))): bool,
+                }
+            ),
         )
 
     async def _check_unique(self):
@@ -292,6 +299,7 @@ class NebosvitConfigFlow(_Steps, config_entries.ConfigFlow, domain=DOMAIN):
             CONF_SETTLEMENT_NAME: "",
             CONF_STREET: "",
             CONF_HOUSE: "",
+            CONF_WHOLE_OBLAST: False,
             **self._values,
         }
         if not values.get(CONF_SETTLEMENT_ID):

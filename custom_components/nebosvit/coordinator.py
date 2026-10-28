@@ -85,6 +85,36 @@ def _severity(alert: dict) -> str:
     return STATUS_RED if alert.get("severity", "red") == "red" else STATUS_YELLOW
 
 
+def _region_levels(raw: list[dict]) -> dict[str, dict[str, str]]:
+    """Per raion/hromada alert level, for the zoomed map; oblast-wide alerts live in `oblasts`."""
+    levels: dict[str, dict[str, str]] = {}
+    for alert in raw:
+        if alert.get("level") == "oblast":
+            continue
+        region = str(alert.get("regionId") or "")
+        if not region:
+            continue
+        entry = levels.setdefault(region, {"level": STATUS_YELLOW})
+        if _severity(alert) == STATUS_RED:
+            entry["level"] = STATUS_RED
+    return levels
+
+
+def _oblast_levels(raw: list[dict]) -> dict[str, dict[str, Any]]:
+    """Per oblast: worst severity, and whether the whole oblast is under alert."""
+    levels: dict[str, dict[str, Any]] = {}
+    for alert in raw:
+        oblast = str(alert.get("oblastId") or alert.get("regionId") or "")
+        if not oblast:
+            continue
+        entry = levels.setdefault(oblast, {"level": STATUS_YELLOW, "whole": False})
+        if _severity(alert) == STATUS_RED:
+            entry["level"] = STATUS_RED
+        if alert.get("level") == "oblast":
+            entry["whole"] = True
+    return levels
+
+
 class AlertsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Alert state for one watched region.
 
@@ -92,11 +122,14 @@ class AlertsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     refreshes at once on it. Polling stays as the fallback for a dropped socket.
     """
 
-    def __init__(self, hass: HomeAssistant, base_url: str, app_key: str | None, region_id: str) -> None:
+    def __init__(
+        self, hass: HomeAssistant, base_url: str, app_key: str | None, region_id: str, whole_oblast: bool = False
+    ) -> None:
         super().__init__(
             hass, _LOGGER, name=f"{DOMAIN} alerts {region_id}", update_interval=ALERTS_SCAN_INTERVAL
         )
         self.region_id = region_id
+        self.whole_oblast = whole_oblast
         self._base_url = base_url.rstrip("/")
         self._app_key = app_key
         self._feed = _EtagFeed(hass, base_url, "/v1/snapshot", app_key)
@@ -136,13 +169,18 @@ class AlertsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         snapshot = await self._feed.fetch()
         self._version = snapshot.get("version")
-        base = {"updated_at": self._feed.updated_at, "version": self._version}
+        # polled_at changes on every poll, so the state machine bumps last_reported
+        # and the dashboard cards can show how long ago data was received.
+        base = {"updated_at": self._feed.updated_at, "version": self._version, "polled_at": dt_util.utcnow().timestamp()}
         raw = snapshot.get("alerts")
         if raw is None:
             # The server has no alert source right now: unknown, not "all clear".
-            return {**base, "known": False, "status": None}
+            return {**base, "known": False, "status": None, "oblasts": {}, "regions": {}}
 
-        matching = [a for a in raw if alert_matches(self.region_id, a)]
+        # Every oblast and raion/hromada under alert, for the map card.
+        base["oblasts"] = _oblast_levels(raw)
+        base["regions"] = _region_levels(raw)
+        matching = [a for a in raw if alert_matches(self.region_id, a, self.whole_oblast)]
         if not matching:
             return {
                 **base,

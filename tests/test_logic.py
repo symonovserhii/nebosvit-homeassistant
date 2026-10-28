@@ -23,6 +23,7 @@ _pkg.__path__ = [str(PKG_DIR)]
 sys.modules["nebosvit_pure"] = _pkg
 addressing = importlib.import_module("nebosvit_pure.addressing")
 timeline = importlib.import_module("nebosvit_pure.timeline")
+regions = importlib.import_module("nebosvit_pure.regions")
 
 CASES = json.loads((HERE / "address_cases.json").read_text())
 
@@ -143,3 +144,21 @@ class Outages(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AlertScope(unittest.TestCase):
+    """Kropyvnytska hromada (761) in raion 81 of Kirovohrad oblast (15)."""
+
+    def test_own_place_raion_and_oblast(self):
+        for alert in ({"regionId": "761", "oblastId": "15"}, {"regionId": "81", "oblastId": "15"},
+                      {"regionId": "15", "oblastId": "15"}):
+            self.assertTrue(regions.alert_matches("761", alert), alert)
+
+    def test_elsewhere_in_oblast_only_with_whole_oblast(self):
+        other = next(rid for rid, row in regions._load().items()
+                     if row["rank"] == "2" and row["parent"] == "15" and rid != "81")
+        alert = {"regionId": other, "oblastId": "15"}
+        self.assertFalse(regions.alert_matches("761", alert))
+        self.assertTrue(regions.alert_matches("761", alert, whole_oblast=True))
+        self.assertFalse(regions.alert_matches("761", {"regionId": "22", "oblastId": "22"}, whole_oblast=True))
+        self.assertEqual(regions.oblast_of("761"), "15")

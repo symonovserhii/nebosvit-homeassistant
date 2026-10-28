@@ -13,6 +13,7 @@ from homeassistant.util import dt as dt_util
 from .const import (
     CONF_HOUSE,
     CONF_POWER_QUEUE,
+    CONF_REGION_NAME,
     CONF_SETTLEMENT_NAME,
     CONF_STREET,
     DAY_STATUSES,
@@ -50,6 +51,7 @@ async def async_setup_entry(
         AlertStatusSensor(alerts, entry),
         AlertTypeSensor(alerts, entry),
         AlertSinceSensor(alerts, entry),
+        AlertMapSensor(alerts, entry),
         LastUpdateSensor(alerts, entry),
     ]
     if (power := runtime["power"]) is not None:
@@ -87,6 +89,11 @@ class AlertStatusSensor(_AlertSensor):
     def native_value(self) -> str | None:
         return self.coordinator.data.get("status")
 
+    @property
+    def extra_state_attributes(self) -> dict:
+        # Read by the dashboard cards as the place name.
+        return {"region": self._config[CONF_REGION_NAME]}
+
 
 class AlertTypeSensor(_AlertSensor):
     """The most urgent threat type; every type and threat is in the attributes."""
@@ -122,6 +129,25 @@ class AlertSinceSensor(_AlertSensor):
     @property
     def native_value(self) -> datetime | None:
         return self.coordinator.data.get("since")
+
+
+class AlertMapSensor(_AlertSensor):
+    """Number of oblasts under alert; the per-oblast and per-raion/hromada
+    levels feed the map card."""
+
+    _attr_translation_key = "alert_map"
+
+    def __init__(self, coordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "alert_map")
+
+    @property
+    def native_value(self) -> int:
+        return len(self.coordinator.data.get("oblasts", {}))
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        data = self.coordinator.data
+        return {"oblasts": data.get("oblasts", {}), "regions": data.get("regions", {})}
 
 
 class LastUpdateSensor(NebosvitAlertEntity, SensorEntity):
