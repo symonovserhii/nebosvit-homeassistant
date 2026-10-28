@@ -58,7 +58,7 @@
       },
       "outage_address": {
         "title": "Street and house",
-        "description": "Both may stay empty: then every outage in the settlement counts. Streets in the operator's data: {streets}",
+        "description": "Both may stay empty: then every outage in the settlement counts. Write the street as on your power bill; the operator's data spells streets like this: {streets}",
         "data": {
           "street": "Street",
           "house": "House"
@@ -126,7 +126,7 @@
       },
       "outage_address": {
         "title": "Street and house",
-        "description": "Both may stay empty: then every outage in the settlement counts. Streets in the operator's data: {streets}",
+        "description": "Both may stay empty: then every outage in the settlement counts. Write the street as on your power bill; the operator's data spells streets like this: {streets}",
         "data": {
           "street": "Street",
           "house": "House"

@@ -36,7 +36,8 @@ _LOGGER = logging.getLogger(__name__)
 
 SKIP = "none"
 MAX_SETTLEMENT_CHOICES = 50
-MAX_STREET_HINTS = 40
+# A few names show how the operator writes streets; the full list is too long for a form.
+MAX_STREET_HINTS = 3
 
 
 class _Steps:
